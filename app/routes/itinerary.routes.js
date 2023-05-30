@@ -1,31 +1,21 @@
 module.exports = (app) => {
-    const Itinerary = require("../controllers/ite.controller.js");
+    const Itinerary = require("../controllers/itinerary.controller.js");
+    const Destination = require("../controllers/destination.controller.js");
     const { authenticateRoute } = require("../authentication/authentication");
     var router = require("express").Router();
-  
-    // Create a new User
-    router.post("/users/", User.create);
+    
+    router.get('/itineraries/users/:emailId', Itinerary.findAll);
+    router.post('/itineraries', Itinerary.create);
+    router.get('/itineraries/:itineraryId', Itinerary.findOne);
+    router.put('/itineraries/:itineraryId', Itinerary.update);
+    router.delete('/itineraries/:itineraryId', Itinerary.delete);
 
-    // Retrieve all Users
-    router.get("/users/", User.findAll);
 
-    // Retrieve a single User with id
-    router.get("/users/:id", User.findOne);
-  
-    // Update a User with id
-    router.put("/users/:id", [authenticateRoute], User.update);
-  
-    // Delete a User with id
-    router.delete("/users/:id", [authenticateRoute], User.delete);
-  
-    // Delete all User
-    router.delete("/users/", [authenticateRoute], User.deleteAll);
+    app.post('/itineraries/:itineraryId/destinations', Destination.create);
+    app.get('/itineraries/:itineraryId/destinations/:destinationId', Destination.getDetails);
+    app.put('/itineraries/:itineraryId/destinations/:destinationId', Destination.update);
+    app.delete('/itineraries/:itineraryId/destinations/:destinationId', Destination.delete);
 
-    router.get('/itineraries/users/:emailId',  [authenticateRoute], Itinerary.findAll);
-    router.post('/itineraries',  [authenticateRoute], Itinerary.create);
-    router.get('/itineraries/:itineraryId',  [authenticateRoute], Itinerary.findOne);
-    router.put('/itineraries/:itineraryId',  [authenticateRoute], Itinerary.update);
-    router.delete('/itineraries/:itineraryId',  [authenticateRoute], Itinerary.delete);
   
     app.use("/travelapi", router);
   };

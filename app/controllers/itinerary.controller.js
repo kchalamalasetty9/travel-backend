@@ -22,8 +22,9 @@ exports.create = async (req, res) => {
     throw error;
   }
   try {
-    const { name, startDate, endDate, email } = req.body;
+    const { id, name, startDate, endDate, email } = req.body;
     const itinerary = await Itinerary.create({
+      id,
       name,
       startDate,
       endDate,

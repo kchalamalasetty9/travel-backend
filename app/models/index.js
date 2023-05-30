@@ -24,6 +24,7 @@ db.sequelize = sequelize;
 db.itinerary = require('./itinerary.model.js')(sequelize, Sequelize);
 db.session = require("./session.model.js")(sequelize, Sequelize);
 db.user = require("./user.model.js")(sequelize, Sequelize);
+db.destination = require("./destination.model.js")(sequelize, Sequelize);
 
 // foreign key for session
 db.user.hasMany(
@@ -36,6 +37,12 @@ db.session.belongsTo(
   { as: "user" },
   { foreignKey: { allowNull: false }, onDelete: "CASCADE" }
 );
+
+db.user.hasMany(db.itinerary);
+db.itinerary.belongsTo(db.user);
+
+db.itinerary.hasMany(db.destination);
+db.destination.belongsTo(db.itinerary);
 
 // // foreign key for recipe
 // db.user.hasMany(
