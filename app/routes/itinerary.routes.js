@@ -1,6 +1,5 @@
 module.exports = (app) => {
     const Itinerary = require("../controllers/itinerary.controller.js");
-    const { authenticateRoute } = require("../authentication/authentication");
     var router = require("express").Router();
 
     router.get('/users/:userId/itineraries', Itinerary.getItinerary)

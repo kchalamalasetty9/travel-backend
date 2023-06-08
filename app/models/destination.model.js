@@ -9,14 +9,6 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      arrival_date: {
-        type: Sequelize.DATE,
-        allowNull: false,
-      },
-      departure_date: {
-        type: Sequelize.DATE,
-        allowNull: false,
-      },
       
   });
 
