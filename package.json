@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "jest --",
-    "start": "nodemon server.js",
+    "start": "node server.js",
     "bundle": "mkdir deploy && cp -r app server.js package.json package-lock.json travel-backend.service .env deploy"
   },
   "keywords": [
