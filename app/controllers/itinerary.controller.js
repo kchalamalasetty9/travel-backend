@@ -49,8 +49,6 @@ exports.createItinerary = async (req, res) => {
               id: uuidv4(),
               dayId: day.id,
               destination_name: destinationData.location,
-              arrival_date: destinationData.arrivalDate,
-              departure_date: destinationData.departureDate
             });
 
             const { activities } = destinationData;
@@ -229,16 +227,12 @@ exports.updateItinerary = async (req, res) => {
               await destination.update({
                 dayId: day.id,
                 destination_name: destinationData.location,
-                arrival_date: destinationData.arrivalDate,
-                departure_date: destinationData.departureDate,
               });
             } else {
               destination = await Destination.create({
                 id: uuidv4(),
                 dayId: day.id,
                 destination_name: destinationData.location,
-                arrival_date: destinationData.arrivalDate,
-                departure_date: destinationData.departureDate,
               });
             }
   
@@ -258,8 +252,8 @@ exports.updateItinerary = async (req, res) => {
                   await activity.update({
                     destinationId: destination.id,
                     activity_name: activityData.name,
-                    start_time: activityData.startTime + ":00",
-                    end_time: activityData.endTime + ":00",
+                    start_time: activityData.startTime,
+                    end_time: activityData.endTime,
                   });
                 } else {
                   await Activity.create({
