@@ -3,7 +3,8 @@ const Itinerary = db.itinerary;
 const Day = db.day;
 const Activity = db.activity;
 const Destination = db.destination;
-const { v4: uuidv4 } = require('uuid');
+const DayDestination = db.day_destination;
+const { v4: uuidv4 } = require("uuid");
 
 exports.createItinerary = async (req, res) => {
   try {
@@ -13,8 +14,7 @@ exports.createItinerary = async (req, res) => {
       const error = new Error("Itenary Name cannot be empty for itinerary!");
       error.statusCode = 400;
       throw error;
-    } 
-    else if (startDate === undefined) {
+    } else if (startDate === undefined) {
       const error = new Error("StartDate cannot be empty for itinerary!");
       error.statusCode = 400;
       throw error;
@@ -22,7 +22,7 @@ exports.createItinerary = async (req, res) => {
       const error = new Error("EndDate cannot be empty for itinerary!");
       error.statusCode = 400;
       throw error;
-    } 
+    }
     const itinerary = await Itinerary.create({
       id: uuidv4(),
       userId,
@@ -47,8 +47,14 @@ exports.createItinerary = async (req, res) => {
             // Create the destination
             const destination = await Destination.create({
               id: uuidv4(),
-              dayId: day.id,
               destination_name: destinationData.location,
+              hotelId: destinationData.hotel.id,
+            });
+
+            // Create the DayDestination entry
+            await DayDestination.create({
+              dayId: day.id,
+              destinationId: destination.id,
             });
 
             const { activities } = destinationData;
@@ -75,10 +81,7 @@ exports.createItinerary = async (req, res) => {
   }
 };
 
-
-
 exports.createItineraryOnly = async (req, res) => {
-
   if (req.body.name === undefined) {
     const error = new Error("Itenary Name cannot be empty for user!");
     error.statusCode = 400;
@@ -91,7 +94,7 @@ exports.createItineraryOnly = async (req, res) => {
     const error = new Error("EndDate cannot be empty for user!");
     error.statusCode = 400;
     throw error;
-  } 
+  }
   try {
     const { id, name, startDate, endDate } = req.body;
     const itinerary = await Itinerary.create({
@@ -158,7 +161,7 @@ exports.updateItinerary = async (req, res) => {
       error.statusCode = 400;
       throw error;
     }
-  
+
     let itinerary;
     if (req.body.id) {
       // Update existing itinerary
@@ -168,7 +171,7 @@ exports.updateItinerary = async (req, res) => {
         error.statusCode = 404;
         throw error;
       }
-  
+
       await itinerary.update({
         userId,
         name,
@@ -185,7 +188,7 @@ exports.updateItinerary = async (req, res) => {
         endDate,
       });
     }
-  
+
     const { days } = req.body;
     if (days && Array.isArray(days)) {
       for (const dayData of days) {
@@ -198,7 +201,7 @@ exports.updateItinerary = async (req, res) => {
             error.statusCode = 404;
             throw error;
           }
-  
+
           await day.update({
             itineraryId: itinerary.id,
             day_date: dayData.date,
@@ -210,45 +213,55 @@ exports.updateItinerary = async (req, res) => {
             day_date: dayData.date,
           });
         }
-  
+
         const { destinations } = dayData;
         if (destinations && Array.isArray(destinations)) {
           for (const destinationData of destinations) {
             // Create or update the destination
             let destination;
             if (destinationData.id) {
-              destination = await Destination.findOne({ where: { id: destinationData.id } });
+              destination = await Destination.findOne({
+                where: { id: destinationData.id },
+              });
               if (!destination) {
                 const error = new Error("Destination not found!");
                 error.statusCode = 404;
                 throw error;
               }
-  
+
               await destination.update({
-                dayId: day.id,
                 destination_name: destinationData.location,
+                hotelId: destinationData.hotel.id,
               });
             } else {
               destination = await Destination.create({
                 id: uuidv4(),
                 dayId: day.id,
                 destination_name: destinationData.location,
+                hotelId: destinationData.hotel.id,
+              });
+              // Create the DayDestination entry
+              await DayDestination.create({
+                dayId: day.id,
+                destinationId: destination.id,
               });
             }
-  
+
             const { activities } = destinationData;
             if (activities && Array.isArray(activities)) {
               for (const activityData of activities) {
                 // Create or update the activity
                 let activity;
                 if (activityData.id) {
-                  activity = await Activity.findOne({ where: { id: activityData.id } });
+                  activity = await Activity.findOne({
+                    where: { id: activityData.id },
+                  });
                   if (!activity) {
                     const error = new Error("Activity not found!");
                     error.statusCode = 404;
                     throw error;
                   }
-  
+
                   await activity.update({
                     destinationId: destination.id,
                     activity_name: activityData.name,
@@ -270,12 +283,11 @@ exports.updateItinerary = async (req, res) => {
         }
       }
     }
-  
+
     res.status(201).json(itinerary);
   } catch (error) {
     res.status(error.statusCode || 500).json({ error: error.message });
   }
-  
 };
 
 exports.deleteItinerary = async (req, res) => {

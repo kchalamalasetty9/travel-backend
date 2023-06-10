@@ -2,10 +2,10 @@ module.exports = (app) => {
   const Day = require("../controllers/day.controller.js");
   var router = require("express").Router();
 
-  app.post("/itineraries/:itineraryId/days", Day.createDay);
-  app.get("/days/:dayId", Day.getDay);
-  app.put("/days/:dayId", Day.updateDay);
-  app.delete("/days/:dayId", Day.deleteDay);
+  router.post("/itineraries/:itineraryId/days", Day.createDay);
+  router.get("/days/:dayId", Day.getDay);
+  router.put("/days/:dayId", Day.updateDay);
+  router.delete("/days/:dayId", Day.deleteDay);
 
   app.use("/travelapi", router);
 };
